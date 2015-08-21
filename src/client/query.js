@@ -16,5 +16,6 @@ function doQuery(q) {
 }
 
 //doQuery(`{product(id:"448456"){title}}`);
-//doQuery('{__schema { queryType { name, fields { name, description} }}}');
-doQuery(`{search(query:"broek"){title, product_number}}`);
+doQuery('{__schema { queryType { name, fields { name, description} }}}');
+doQuery('{__schema{types{name,kind}}}');
+//doQuery(`{search(query:"broek"){title, product_number}}`);

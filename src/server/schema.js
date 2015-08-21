@@ -47,4 +47,5 @@ const makeSchemaWithProductType = productType => new GraphQLSchema({
 
 export default getSampleProduct()
   .then(product => objectToSchema('Product', product))
+  .then(productSchema => {console.log(JSON.stringify(productSchema)); return productSchema})
   .then(makeSchemaWithProductType);
