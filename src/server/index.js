@@ -1,2 +1,5 @@
 require('babel/register');
-require('./server');
+
+if (require('piping')({main:"./src/server/index.js",hook:true})) {
+  require('./server');
+}
