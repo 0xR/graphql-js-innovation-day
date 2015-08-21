@@ -10,20 +10,12 @@ import co from 'co';
 import {default as productService, getSampleProduct} from './product-service.js';
 import searchService from './search-service.js';
 
-const productToSchema = product => Object.keys(product)
-  .filter(key => typeof product[key] === 'string')
-  .reduce((acc, key) => ({
-    ...acc,
-    [key]: {
-      type: GraphQLString,
-      description: `The ${key} of the product.`,
-    }
-  }), {});
+import schemaCreator from './schema-creator.js';
 
 getSampleProduct()
-  .then(productToSchema).then(val => {
-    console.log(val);
-    productFields = val;
+  .then(schemaCreator).then(schema => {
+    console.log(schema);
+    productFields = schema;
   });
 
 
