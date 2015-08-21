@@ -4,7 +4,7 @@ import qs from 'koa-qs';
 import parseBody from 'co-body';
 import mongoose from 'mongoose';
 import {graphql} from 'graphql';
-import schema from './schema';
+import createSchema from './schema';
 
 let port = process.env.PORT || 3000;
 let routes = new Router();
@@ -21,6 +21,7 @@ routes.get('/data', function* () {
   var query = this.query.query;
   var params = this.query.params;
 
+  var schema = yield createSchema;
   var resp = yield graphql(schema, query, '', params);
 
   if (resp.errors) {
