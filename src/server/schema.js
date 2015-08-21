@@ -7,22 +7,25 @@ import {
 } from 'graphql/type';
 
 import co from 'co';
-import productService from './product-service.js';
+import {default as productService, getSampleProduct} from './product-service.js';
 import searchService from './search-service.js';
+
+getSampleProduct()
+  .then(product => {
+    Object.keys(product)
+      .filter(key => typeof product[key] === 'string')
+      .map((key) => productFields[key] = {
+        type: GraphQLString,
+        description: `The ${key} of the product.`,
+      });
+  });
+
+let productFields = {};
 
 var productType = new GraphQLObjectType({
   name: 'Product',
   description: 'Product at wehkamp',
-  fields: () => ({
-    productNumber: {
-      type: GraphQLString,
-      description: 'The productNumber of the product.',
-    },
-    title: {
-      type: GraphQLString,
-      description: 'The name of the product.'
-    }
-  })
+  fields: () => productFields
 });
 
 var searchType = new GraphQLList(productType);

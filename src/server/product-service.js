@@ -8,19 +8,12 @@ export function getSampleProduct() {
   return getProduct('448456');
 }
 
-const fixProduct = product => {
-  product.productNumber = product.product_number;
-  return product
-};
-
 export function getProducts(ids) {
   return fetch('https://www.wehkamp.com/nlbe/product-service/products/?filter=' + ids.join(';'))
-    .then(res => res.json())
-    .then(products => products.map(fixProduct));
+    .then(res => res.json());
 }
 
 export default function getProduct(id) {
   return fetch('https://www.wehkamp.com/nlbe/product-service/products/' + id)
-    .then(res => res.json())
-    .then(fixProduct);
+    .then(res => res.json());
 }

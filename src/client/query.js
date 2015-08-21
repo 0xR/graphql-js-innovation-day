@@ -11,10 +11,10 @@ function doQuery(q) {
       query: q
     })
     .end(function (err, res) {
-      debug(err, res.body);
+      debug(err, res.body.data);
     });
 }
 
 //doQuery(`{product(id:"448456"){title}}`);
 //doQuery('{__schema { queryType { name, fields { name, description} }}}');
-doQuery(`{search(query:"broek"){title, productNumber}}`);
+doQuery(`{search(query:"broek"){title, product_number}}`);
