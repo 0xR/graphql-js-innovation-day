@@ -10,17 +10,24 @@ import co from 'co';
 import {default as productService, getSampleProduct} from './product-service.js';
 import searchService from './search-service.js';
 
+const productToSchema = product => Object.keys(product)
+  .filter(key => typeof product[key] === 'string')
+  .reduce((acc, key) => ({
+    ...acc,
+    [key]: {
+      type: GraphQLString,
+      description: `The ${key} of the product.`,
+    }
+  }), {});
+
 getSampleProduct()
-  .then(product => {
-    Object.keys(product)
-      .filter(key => typeof product[key] === 'string')
-      .map((key) => productFields[key] = {
-        type: GraphQLString,
-        description: `The ${key} of the product.`,
-      });
+  .then(productToSchema).then(val => {
+    console.log(val);
+    productFields = val;
   });
 
-let productFields = {};
+
+let productFields;
 
 var productType = new GraphQLObjectType({
   name: 'Product',
