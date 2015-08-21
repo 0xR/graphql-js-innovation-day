@@ -1,0 +1,22 @@
+{
+  "name": "graphql-innovation-day",
+  "version": "1.0.0",
+  "description": "graphql experiment",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xebia/graphql-js-innovation-day.git"
+  },
+  "author": "Xebia",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xebia/graphql-js-innovation-day/issues"
+  },
+  "homepage": "https://github.com/xebia/graphql-js-innovation-day#readme",
+  "dependencies": {
+    "graphql": "^0.4.2"
+  }
+}
