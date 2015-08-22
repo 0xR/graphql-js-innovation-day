@@ -13,40 +13,17 @@ const isObject = jsObject =>
   (typeof jsObject === "object" && !Array.isArray(jsObject) && jsObject !== null);
 
 
-const makeArrayTypedef = (name, firstEntry) => {
-  if (firstEntry) {
-    return new GraphQLList(objectToSchema(name, firstEntry));
+const makeArrayTypedef = (name, jsArray) => {
+  if (jsArray[0]) {
+    return new GraphQLList(makeTypeDef(name, jsArray[0]));
   } else {
     return GraphQLString;
   }
 };
 
-const makeFieldDescription = (name, type) => ({type, description: `[GENERATED] ${name}`});
+const makeFieldDescription = (name, type) => ({type, description: `[GENERATED] field ${name}`});
 
-const makeTypeDef = (name, jsObject) => {
-  switch (true) {
-    case isObject(jsObject):
-      return objectToSchema(name, jsObject);
-    case Array.isArray(jsObject):
-      return makeArrayTypedef(name, jsObject[0]);
-    case typeof jsObject === 'number':
-      if (jsObject % 1 === 0) {
-        return GraphQLInt;
-      } else {
-        return GraphQLFloat;
-      }
-    case typeof jsObject === 'string':
-      return GraphQLString;
-    case typeof jsObject === 'boolean':
-      return GraphQLBoolean;
-    default:
-      console.warn('JS type ignored:', jsObject);
-      return undefined;
-  }
-};
-
-
-const objectToFields = jsObject =>
+const objectPropsToFields = jsObject =>
   Object.keys(jsObject)
     .reduce((acc, key) => {
       const type = makeFieldDescription(key, makeTypeDef(key, jsObject[key]));
@@ -56,11 +33,34 @@ const objectToFields = jsObject =>
       } : acc
     }, {});
 
-const objectToSchema = (name, jsObject) =>
+
+const makeObjectTypeDef = (name, jsObject) =>
   new GraphQLObjectType({
     name: name,
-    description: `[GENERATED] ${name}`,
-    fields: objectToFields(jsObject)
+    description: `[GENERATED] object ${name}`,
+    fields: objectPropsToFields(jsObject)
   });
 
-export default objectToSchema;
+const makeTypeDef = (name, jsValue) => {
+  switch (true) {
+    case isObject(jsValue):
+      return makeObjectTypeDef(name, jsValue);
+    case Array.isArray(jsValue):
+      return makeArrayTypedef(name, jsValue);
+    case typeof jsValue === 'number':
+      if (jsValue % 1 === 0) {
+        return GraphQLInt;
+      } else {
+        return GraphQLFloat;
+      }
+    case typeof jsValue === 'string':
+      return GraphQLString;
+    case typeof jsValue === 'boolean':
+      return GraphQLBoolean;
+    default:
+      console.warn('JS type ignored:', jsValue);
+      return undefined;
+  }
+};
+
+export default makeTypeDef;

@@ -10,7 +10,7 @@ import co from 'co';
 import {default as productService, getSampleProduct} from './product-service.js';
 import searchService from './search-service.js';
 
-import objectToSchema from './schema-creator.js';
+import makeTypeDef from './schema-creator.js';
 
 const makeSchemaWithProductType = productType => new GraphQLSchema({
   query: new GraphQLObjectType({
@@ -24,7 +24,7 @@ const makeSchemaWithProductType = productType => new GraphQLSchema({
             type: new GraphQLNonNull(GraphQLString)
           }
         },
-        resolve: function (root, {id}, source, fieldASTs) {
+        resolve: function (root, {id}) {
           return productService(id);
         }
       },
@@ -33,19 +33,18 @@ const makeSchemaWithProductType = productType => new GraphQLSchema({
         args: {
           query: {
             name: 'query',
-            type: new GraphQLNonNull(GraphQLString),
-
+            type: new GraphQLNonNull(GraphQLString)
           }
         },
-        resolve: function (root, {query}, source, fieldASTs) {
+        resolve: function (root, {query}) {
           return searchService(query);
         }
       }
-    },
+    }
   })
 });
 
 export default getSampleProduct()
-  .then(product => objectToSchema('Product', product))
+  .then(product => makeTypeDef('Product', product))
   //.then(productSchema => {debugger; return productSchema})
   .then(makeSchemaWithProductType);
