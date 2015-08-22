@@ -3,7 +3,10 @@ import {
   GraphQLNonNull,
   GraphQLSchema,
   GraphQLString,
-  GraphQLList
+  GraphQLList,
+  GraphQLInt,
+  GraphQLFloat,
+  GraphQLBoolean
 } from 'graphql/type';
 
 const isObject = jsObject =>
@@ -18,26 +21,40 @@ const makeArrayTypedef = (name, firstEntry) => {
   }
 };
 
-const makeTypeDefObject = (name, type) => ({type, description: `[GENERATED] ${name}`});
+const makeFieldDescription = (name, type) => ({type, description: `[GENERATED] ${name}`});
 
 const makeTypeDef = (name, jsObject) => {
-  if (isObject(jsObject)) {
-    return makeTypeDefObject(name, objectToSchema(name, jsObject));
-  } else if (Array.isArray(jsObject)) {
-    return makeTypeDefObject(name, makeArrayTypedef(name, jsObject[0]));
-  } else {
-    return makeTypeDefObject(name, GraphQLString);
+  switch (true) {
+    case isObject(jsObject):
+      return objectToSchema(name, jsObject);
+    case Array.isArray(jsObject):
+      return makeArrayTypedef(name, jsObject[0]);
+    case typeof jsObject === 'number':
+      if (jsObject % 1 === 0) {
+        return GraphQLInt;
+      } else {
+        return GraphQLFloat;
+      }
+    case typeof jsObject === 'string':
+      return GraphQLString;
+    case typeof jsObject === 'boolean':
+      return GraphQLBoolean;
+    default:
+      console.warn('JS type ignored:', jsObject);
+      return undefined;
   }
 };
 
 
 const objectToFields = jsObject =>
   Object.keys(jsObject)
-    .filter(key => typeof jsObject[key] === 'string' || isObject(jsObject[key]) || Array.isArray(jsObject[key]))
-    .reduce((acc, key) => ({
-      ...acc,
-      [key]: makeTypeDef(key, jsObject[key])
-    }), {});
+    .reduce((acc, key) => {
+      const type = makeFieldDescription(key, makeTypeDef(key, jsObject[key]));
+      return type ? {
+        ...acc,
+        [key]: type
+      } : acc
+    }, {});
 
 const objectToSchema = (name, jsObject) =>
   new GraphQLObjectType({
